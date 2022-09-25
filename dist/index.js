@@ -34,6 +34,7 @@ io.use((socket, next) => __awaiter(void 0, void 0, void 0, function* () {
     }
 }));
 io.on('connection', (socket) => {
+    console.log('socket connected');
     const userId = socket.handshake.auth.userId;
     socket.join(userId);
 });
@@ -51,7 +52,8 @@ app.post('/googleAuth/:userId', (req, res) => {
 app.post('/submission/:formId', (req, res) => {
     try {
         const formId = req.query.formId;
-        const { userId, answers } = req.body;
+        const userId = req.userId;
+        const { answers } = req.body;
         io.to(userId).emit('submission', { userId, answers, formId });
         res.status(200).send('Success');
     }
