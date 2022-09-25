@@ -13,7 +13,7 @@ const private_key = process.env.DEVELOPMENT_MODE
   : JSON.parse(process.env.ADMIN_PRIVATE_KEY || '')
 
 const serviceAccount = {
-  type: 'service_account',
+  type: process.env.ADMIN_TYPE,
   private_key,
   project_id: process.env.ADMIN_PROJECT_ID as string,
   private_key_id: process.env.ADMIN_PRIVATE_KEY_ID,
