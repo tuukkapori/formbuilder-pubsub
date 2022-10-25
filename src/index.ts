@@ -1,3 +1,4 @@
+import { NextFunction, Request, Response } from 'express'
 import { Socket } from 'socket.io'
 import {
   authenticateFirebaseUser,
@@ -18,7 +19,7 @@ dotenv.config()
 app.use(cors())
 app.use(express.json())
 
-io.use(async (socket: Socket, next: any) => {
+io.use(async (socket: Socket, next: NextFunction) => {
   try {
     await validateFirebaseUser(socket)
     next()
@@ -27,7 +28,7 @@ io.use(async (socket: Socket, next: any) => {
   }
 })
 
-io.on('connection', (socket: any) => {
+io.on('connection', (socket: Socket) => {
   const userId = socket.handshake.auth.userId
   socket.join(userId)
 })
@@ -35,7 +36,7 @@ io.on('connection', (socket: any) => {
 app.post(
   '/googleAuth/:userId',
   authenticateFirebaseUser,
-  (req: any, res: any) => {
+  (req: Request, res: Response) => {
     try {
       const userId = req.params.userId
       const { data } = req.body
@@ -48,7 +49,7 @@ app.post(
   }
 )
 
-app.post('/submission/:formId', async (req: any, res: any) => {
+app.post('/submission/:formId', async (req: Request, res: Response) => {
   try {
     const { answers, userId, apiToken } = req.body
 

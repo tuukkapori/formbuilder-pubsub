@@ -36,22 +36,28 @@ const getAuthToken = (req: Request, res: Response, next: NextFunction) => {
     req.headers.authorization &&
     req.headers.authorization.split(' ')[0] === 'Bearer'
   ) {
-    ;(req as any).authToken = req.headers.authorization.split(' ')[1]
+    req.authToken = req.headers.authorization.split(' ')[1]
   } else {
-    ;(req as any).authToken = null
+    req.authToken = undefined
   }
   next()
 }
 
-const authenticateFirebaseUser = (req: any, res: any, next: any) => {
+const authenticateFirebaseUser = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   getAuthToken(req, res, async () => {
     try {
-      const { authToken } = req as any
+      const { authToken } = req
+      if (!authToken) {
+        throw new Error('No auth token')
+      }
       const decodedToken = await getAuth().verifyIdToken(authToken)
-      ;(req as any).userId = decodedToken.uid
+      req.userId = decodedToken.uid
       return next()
     } catch (error) {
-      console.log('error ', (error as any).message)
       return res.status(401).send({ error: 'Not authorized' })
     }
   })
